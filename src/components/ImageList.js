@@ -97,7 +97,7 @@ const ImageList = () => {
       {modalImage && (
         <div className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={`/data1/${modalImage}.png`} alt={`Image ${modalImage}`} />
+            <img src={`/data1/${modalImage}.png`} alt={`${modalImage}`} />
           </div>
         </div>
       )}
