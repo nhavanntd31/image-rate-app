@@ -15,26 +15,66 @@ const ImageList = () => {
   useEffect(() => {
     const loadImages = async () => {
       const totalImages = 1000; // Assuming 1000 images
-      const imageList = Array.from({ length: totalImages }, (_, i) => `${i + 1}`.padStart(4, '0'));
+      const imageList = Array.from({ length: totalImages }, (_, i) => `${i + 1}`);
       setImages(imageList);
     };
 
     loadImages();
   }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
   const handleSave = async () => {
-    const currentImages = images.slice((currentPage - 1) * imagesPerPage, currentPage * imagesPerPage);
+    const startIdx = (currentPage - 1) * imagesPerPage;
+    const currentImages = images.slice(startIdx, startIdx + imagesPerPage);
     const dataToSave = currentImages.map(img => ({
       id: img,
       quality: imageData[img]?.quality || 1,
       class: imageData[img]?.class || 0,
-      comment: imageData[img]?.comment || ''
+      comment: imageData[img]?.comment || 'no description'
     }));
-    await axios.post('http://localhost:5000/api/save', dataToSave);
-    alert('Data saved successfully!');
+
+    try {
+      // Fetch existing data from the sheet to determine if an ID exists
+      const response = await axios.get('https://sheet.best/api/sheets/32649da8-4893-4bfd-a925-e970d6a3f53f');
+      const existingData = response.data;
+
+      // Create a set of existing IDs for faster lookup
+      const existingDataIds = new Set(existingData.map(item => item.id));
+
+      // Create an array of promises for conditional updates (PUT or POST)
+      const savePromises = dataToSave.map(item => {
+        const url = `https://sheet.best/api/sheets/32649da8-4893-4bfd-a925-e970d6a3f53f/id/${item.id}`;
+
+        if (existingDataIds.has(item.id)) {
+          // If ID exists, update (PUT) the existing row
+          return axios.put(url, {
+            id: item.id,
+            class: item.class,
+            quality: item.quality,
+            comment: item.comment
+          });
+        } else {
+          // If ID does not exist, add (POST) a new row
+          return axios.post('https://sheet.best/api/sheets/32649da8-4893-4bfd-a925-e970d6a3f53f', {
+            id: item.id,
+            class: item.class,
+            quality: item.quality,
+            comment: item.comment
+          });
+        }
+      });
+
+      // Execute all save promises concurrently
+      await Promise.all(savePromises);
+
+      alert('Data saved successfully!');
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('Error saving data');
+    }
   };
 
   const handleChange = (img, field, value) => {
@@ -47,8 +87,7 @@ const ImageList = () => {
     }));
   };
 
-  const handlePageChange = (e) => {
-    const page = Number(e.target.value);
+  const handlePageChange = (page) => {
     if (page >= 1 && page <= Math.ceil(images.length / imagesPerPage)) {
       setCurrentPage(page);
     }
@@ -83,13 +122,13 @@ const ImageList = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={Math.ceil(images.length / imagesPerPage)}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
       />
       <input
         type="number"
         className="page-input"
         value={currentPage}
-        onChange={handlePageChange}
+        onChange={(e) => handlePageChange(Number(e.target.value))}
         min="1"
         max={Math.ceil(images.length / imagesPerPage)}
       />
@@ -97,7 +136,7 @@ const ImageList = () => {
       {modalImage && (
         <div className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={`/data1/${modalImage}.png`} alt={`${modalImage}`} />
+            <img src={`/data/${modalImage}.png`} alt={`${modalImage}`} />
           </div>
         </div>
       )}
