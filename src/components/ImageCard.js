@@ -104,14 +104,8 @@ const ImageCard = ({ image, data, onChange, onClick }) => {
             onChange(image, 'comment', e.target.value);
           }}
         />
-        
       </div>
-      <div>
-        <button onClick={recording ? handleStopRecording : handleStartRecording}>
-          {recording ? 'Stop Recording' : 'Start Recording'}
-        </button>
-        {audioURL && <audio controls src={audioURL} />}
-      </div>
+
     </div>
   );
 };

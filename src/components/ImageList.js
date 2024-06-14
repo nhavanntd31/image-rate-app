@@ -52,17 +52,17 @@ const ImageList = () => {
           // If ID exists, update (PUT) the existing row
           return axios.put(url, {
             id: item.id,
-            class: item.class,
-            quality: item.quality,
-            comment: item.comment
+            class: `${item.class}`,
+            quality: `${item.quality}`,
+            comment:`${item.comment}`
           });
         } else {
           // If ID does not exist, add (POST) a new row
           return axios.post('https://sheet.best/api/sheets/32649da8-4893-4bfd-a925-e970d6a3f53f', {
             id: item.id,
-            class: item.class,
-            quality: item.quality,
-            comment: item.comment
+            class: `${item.class}`,
+            quality: `${item.quality}`,
+            comment:`${item.comment}`
           });
         }
       });
@@ -136,7 +136,7 @@ const ImageList = () => {
       {modalImage && (
         <div className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={`/data/${modalImage}.png`} alt={`${modalImage}`} />
+            <img src={`/data1/${modalImage}.png`} alt={`${modalImage}`} />
           </div>
         </div>
       )}
