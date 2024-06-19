@@ -13,8 +13,8 @@ fs.readdir(directory, (err, files) => {
   
   // Sort files numerically by the numbers in their names
   files.sort((a, b) => {
-    const numA = parseInt(a.split('.')[0]);
-    const numB = parseInt(b.split('.')[0]);
+    const numA = parseInt(a.match(/\d+/)[0], 10);
+    const numB = parseInt(b.match(/\d+/)[0], 10);
     return numA - numB;
   });
 
@@ -23,7 +23,7 @@ fs.readdir(directory, (err, files) => {
     // Extract extension
     const ext = path.extname(filename);
     
-    // Create new filename without leading zeros
+    // Create new filename starting from 1
     const newFilename = `${index + 1}${ext}`;
     
     // Construct full paths
