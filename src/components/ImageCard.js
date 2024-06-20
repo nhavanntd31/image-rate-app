@@ -67,7 +67,7 @@ const ImageCard = ({ image, data, onChange, onClick }) => {
       />
       <div className="image-id">ID: {image}</div>
       <div>
-        <label className="label">Quality:</label>
+        <label className="label">Chất lượng:</label>
         <input
           type="number"
           className="input-field"
@@ -81,7 +81,7 @@ const ImageCard = ({ image, data, onChange, onClick }) => {
         />
       </div>
       <div>
-        <label className="label">Class:</label>
+        <label className="label">Lớp:</label>
         <select
           className="input-field"
           value={data?.class || ''}
@@ -90,12 +90,12 @@ const ImageCard = ({ image, data, onChange, onClick }) => {
             onChange(image, 'class', e.target.value);
           }}
         >
-          <option value="0">0</option>
-          <option value="1">1</option>
+          <option value="0">Lành tính</option>
+          <option value="1">Ác tính</option>
         </select>
       </div>
       <div>
-        <label className="label">Comment:</label>
+        <label className="label">Miêu tả:</label>
         <textarea
           className="input-field"
           value={data?.comment || ''}
